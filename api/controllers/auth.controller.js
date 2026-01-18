@@ -4,13 +4,23 @@ import { errorHandler } from '../utils/error.js';
 import jwt from 'jsonwebtoken';
 
 export const signup = async (req, res, next) => {
+  console.log('Signup attempt:', req.body);
   const { username, email, password } = req.body;
+  
+  if (!username || !email || !password) {
+    console.log('Missing fields:', { username: !!username, email: !!email, password: !!password });
+    return next(errorHandler(400, 'All fields are required'));
+  }
+  
   const hashedPassword = bcryptjs.hashSync(password, 10);
   const newUser = new User({ username, email, password: hashedPassword });
   try {
+    console.log('Attempting to save user...');
     await newUser.save();
+    console.log('User saved successfully');
     res.status(201).json('User created successfully!');
   } catch (error) {
+    console.error('Signup error:', error);
     next(error);
   }
 };
