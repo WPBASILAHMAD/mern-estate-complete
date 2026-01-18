@@ -1,21 +1,21 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
-import tailwindcss from '@tailwindcss/vite'
+/** @format */
+
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
+  base: "./", // ✅ Important for Vercel deployment
   server: {
     proxy: {
-      '/api': {
-        target: 'http://localhost:3000', 
+      "/api": {
+        target: "http://localhost:3000",
         secure: false,
       },
     },
   },
   build: {
-    outDir: 'dist',
+    outDir: "dist",
   },
-  plugins: [
-    react(),
-    tailwindcss(),
-  ],
-})
+  plugins: [react(), tailwindcss()],
+});
