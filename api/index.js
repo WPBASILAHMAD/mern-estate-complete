@@ -23,7 +23,11 @@ app.use("/api/listing", listingRouter);
 
 // test route (VERY IMPORTANT)
 app.get("/api/test", (req, res) => {
-  res.json({ message: "API is working" });
+  res.json({ 
+    message: "API is working",
+    mongo: process.env.MONGO ? "connected" : "missing",
+    jwt: process.env.JWT_SECRET ? "exists" : "missing"
+  });
 });
 
 // error handler
@@ -41,6 +45,9 @@ app.use((err, req, res, next) => {
 mongoose
   .connect(process.env.MONGO)
   .then(() => console.log("Connected to MongoDB!"))
-  .catch((err) => console.log(err));
+  .catch((err) => {
+    console.log("MongoDB connection error:", err);
+    console.log("MONGO env:", process.env.MONGO ? "exists" : "missing");
+  });
 
 export default app;
