@@ -1,42 +1,46 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import userRouter from './routes/User.route.js';
-import authRouter from './routes/auth.route.js';
-import listingRouter from './routes/listing.route.js'; 
-import cookieParser from 'cookie-parser';
+/** @format */
+
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import userRouter from "./routes/User.route.js";
+import authRouter from "./routes/auth.route.js";
+import listingRouter from "./routes/listing.route.js";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
-mongoose.connect(process.env.MONGO).then(() => {
-    console.log('Connected to MongoDB!');
-}).catch((err) => {
-    console.log(err);
-});
-
 const app = express();
 
+// middleware
 app.use(express.json());
 app.use(cookieParser());
 
-app.use('/api/user', userRouter);
-app.use('/api/auth', authRouter);
-app.use('/api/listing', listingRouter);
+// routes
+app.use("/api/user", userRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/listing", listingRouter);
 
-app.use((err, req, res, next) => {
-    const statusCode = err.statusCode || 500;
-    const message = err.message || 'Internal Server Error';
-    return res.status(statusCode).json({
-        success: false,
-        statusCode,
-        message,
-    });
+// test route (VERY IMPORTANT)
+app.get("/api/test", (req, res) => {
+  res.json({ message: "API is working" });
 });
 
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(3000, () => {
-        console.log('Server is running on port 3000!');
-    });
-}
+// error handler
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  return res.status(statusCode).json({
+    success: false,
+    statusCode,
+    message,
+  });
+});
+
+// MongoDB connection (NO listen)
+mongoose
+  .connect(process.env.MONGO)
+  .then(() => console.log("Connected to MongoDB!"))
+  .catch((err) => console.log(err));
 
 export default app;
